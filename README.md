@@ -1,0 +1,2 @@
+# Bankist
+ small bank app
