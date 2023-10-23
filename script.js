@@ -76,8 +76,6 @@ const displayMovements = function(movements){
   })
 }
 
-displayMovements(account1.movements);
-
 const user = 'Steven Thomas Williams';
 const createUsernames = function(accounts){
   accounts.forEach((acc)=>{
@@ -92,26 +90,44 @@ const calcDisplayBalance  = function(movements){
   labelBalance.textContent = `${balance} EUR`;
 };
 
-calcDisplayBalance(account1.movements);
 
-const calcDisplaySummary = function(movements){
-  const incomes = movements.filter(mov => mov > 0).reduce((acc, mov) => acc + mov, 0);
+const calcDisplaySummary = function(currentAccount){
+  const incomes = currentAccount.movements.filter(mov => mov > 0).reduce((acc, mov) => acc + mov, 0);
   labelSumIn.textContent = `${incomes}€`
 
-  const out = movements.filter(mov => mov <0 ).reduce((acc, mov) => acc + mov, 0);
+  const out = currentAccount.movements.filter(mov => mov <0 ).reduce((acc, mov) => acc + mov, 0);
   labelSumOut.textContent = `${Math.abs(out)}€`
 
-  const interest = movements.filter(mov => mov > 0)
-  .map(deposit => (deposit* 1.2)/100)
+  const interest = currentAccount.movements.filter(mov => mov > 0)
+  .map(deposit => (deposit* currentAccount.interestRate)/100)
   .filter(int => int >= 1)
   .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = interest;
+  labelSumInterest.textContent = `${interest}€`;
 }
-calcDisplaySummary(account1.movements);
+
+let currentAccount;
 
 btnLogin.addEventListener('click', function(e) {
   e.preventDefault();
-  console.log('login');
+  currentAccount = accounts.find( acc => acc.username === inputLoginUsername.value);
+  console.log(currentAccount);
+  if(currentAccount?.pin === Number(inputLoginPin.value)){
+    //display UI and message
+    labelWelcome.textContent = `Welcome back, ${currentAccount.owner.split(' ')[0]}`
+    containerApp.style.opacity = 100;
+
+    //clear fields
+    inputLoginUsername.value = inputLoginPin.value = '';
+    inputLoginPin.blur();
+
+
+    //display movements
+    displayMovements(currentAccount.movements);
+    //display balance
+    calcDisplayBalance(currentAccount.movements);
+    //dispaly summary
+    calcDisplaySummary(currentAccount);
+  }
 
 })
 /////////////////////////////////////////////////
