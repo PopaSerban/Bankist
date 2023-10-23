@@ -77,9 +77,45 @@ const displayMovements = function(movements){
 }
 
 displayMovements(account1.movements);
+
+const user = 'Steven Thomas Williams';
+const createUsernames = function(accounts){
+  accounts.forEach((acc)=>{
+    acc.username = acc.owner.toLowerCase().split(' ').map((word) =>  word[0]).join('');
+  });
+
+}
+createUsernames(accounts);
+
+const calcDisplayBalance  = function(movements){
+  const balance = movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${balance} EUR`;
+};
+
+calcDisplayBalance(account1.movements);
+
+const calcDisplaySummary = function(movements){
+  const incomes = movements.filter(mov => mov > 0).reduce((acc, mov) => acc + mov, 0);
+  labelSumIn.textContent = `${incomes}€`
+
+  const out = movements.filter(mov => mov <0 ).reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `${Math.abs(out)}€`
+
+  const interest = movements.filter(mov => mov > 0)
+  .map(deposit => (deposit* 1.2)/100)
+  .filter(int => int >= 1)
+  .reduce((acc, int) => acc + int, 0);
+  labelSumInterest.textContent = interest;
+}
+calcDisplaySummary(account1.movements);
+
+btnLogin.addEventListener('click', function(e) {
+  e.preventDefault();
+  console.log('login');
+
+})
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
-// LECTURES
 
 const currencies = new Map([
   ['USD', 'United States dollar'],
@@ -92,14 +128,30 @@ const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 /////////////////////////////////////////////////
 
 
-const euroToUsd = 1.1;
-// const movementsUSD = movements.map(function(mov){
-//   return mov * euroToUsd;
+// const euroToUsd = 1.1;
+// // const movementsUSD = movements.map(function(mov){
+// //   return mov * euroToUsd;
+// // })
+// const movementsUSD = movements.map(mov =>  mov * euroToUsd);
+// console.log(movementsUSD);
+
+// movements.map((mov, i, )=>{
+//   return `Movement ${i+1}: You ${mov > 0 ? 'deposited':'withdrew'} ${Math.abs(mov)}`;
+
+// });
+
+// const deposits = movements.filter(function(mov){
+//     return mov > 0;
 // })
-const movementsUSD = movements.map(mov =>  mov * euroToUsd);
-console.log(movementsUSD);
+// const depositsFor = [];
+// for(const mov of movements) if(mov > 0) depositsFor.push(mov);
 
-movements.map((mov, i, )=>{
-  return `Movement ${i+1}: You ${mov > 0 ? 'deposited':'withdrew'} ${Math.abs(mov)}`;
+// const withdrawals = movements.filter( mov => mov <0 );
 
-});
+// const balacne = movements.reduce( (accumulator,current)=> {
+//   return accumulator + current;
+// }, 0)
+
+const euroToUsd = 1.1;
+const totalDepositUSD = movements.filter(mov => mov>0).map(mov => mov* euroToUsd).reduce((acc, mov)=> acc+mov, 0);
+console.log(totalDepositUSD);
