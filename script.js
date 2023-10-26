@@ -84,10 +84,15 @@ const createUsernames = function(accounts){
 
 }
 createUsernames(accounts);
+const updateUI = function(currentAccount){
+    displayMovements(currentAccount.movements); //display movements
+    calcDisplayBalance(currentAccount); //display balance
+    calcDisplaySummary(currentAccount); //dispaly summary
+};
 
-const calcDisplayBalance  = function(movements){
-  const balance = movements.reduce((acc, mov) => acc + mov, 0);
-  labelBalance.textContent = `${balance} EUR`;
+const calcDisplayBalance  = function(account){
+  account.balance = account.movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${account.balance}€`;
 };
 
 
@@ -119,55 +124,41 @@ btnLogin.addEventListener('click', function(e) {
     //clear fields
     inputLoginUsername.value = inputLoginPin.value = '';
     inputLoginPin.blur();
+    updateUI(currentAccount);
 
-
-    //display movements
-    displayMovements(currentAccount.movements);
-    //display balance
-    calcDisplayBalance(currentAccount.movements);
-    //dispaly summary
-    calcDisplaySummary(currentAccount);
   }
+
+  
+
+  btnTransfer.addEventListener('click', function(e){
+    e.preventDefault();
+    const amount = Number(inputTransferAmount.value);
+    const recieverAccount = accounts.find(account => account.username === inputTransferTo.value);
+    inputTransferAmount.value = inputTransferTo.value = '';
+    if(amount > 0 && recieverAccount && currentAccount.balance >= amount && recieverAccount?.username !== currentAccount.username){
+      //transfer
+      console.log(recieverAccount)
+      currentAccount.movements.push(-amount);
+      recieverAccount.movements.push(amount);
+      updateUI(currentAccount);
+      console.log(recieverAccount);
+    }
+  })
 
 })
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 
-const currencies = new Map([
-  ['USD', 'United States dollar'],
-  ['EUR', 'Euro'],
-  ['GBP', 'Pound sterling'],
-]);
+// const currencies = new Map([
+//   ['USD', 'United States dollar'],
+//   ['EUR', 'Euro'],
+//   ['GBP', 'Pound sterling'],
+// ]);
 
-const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
-/////////////////////////////////////////////////
+// /////////////////////////////////////////////////
 
 
 // const euroToUsd = 1.1;
-// // const movementsUSD = movements.map(function(mov){
-// //   return mov * euroToUsd;
-// // })
-// const movementsUSD = movements.map(mov =>  mov * euroToUsd);
-// console.log(movementsUSD);
-
-// movements.map((mov, i, )=>{
-//   return `Movement ${i+1}: You ${mov > 0 ? 'deposited':'withdrew'} ${Math.abs(mov)}`;
-
-// });
-
-// const deposits = movements.filter(function(mov){
-//     return mov > 0;
-// })
-// const depositsFor = [];
-// for(const mov of movements) if(mov > 0) depositsFor.push(mov);
-
-// const withdrawals = movements.filter( mov => mov <0 );
-
-// const balacne = movements.reduce( (accumulator,current)=> {
-//   return accumulator + current;
-// }, 0)
-
-const euroToUsd = 1.1;
-const totalDepositUSD = movements.filter(mov => mov>0).map(mov => mov* euroToUsd).reduce((acc, mov)=> acc+mov, 0);
-console.log(totalDepositUSD);
+// const totalDepositUSD = movements.filter(mov => mov>0).map(mov => mov* euroToUsd).reduce((acc, mov)=> acc+mov, 0);
